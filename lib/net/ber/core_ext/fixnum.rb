@@ -1,4 +1,11 @@
 module Net::BER::Extensions::Fixnum
+
+  ##
+  # Define ord for ruby 1.8
+  def ord
+    self
+  end unless Fixnum.methods.include? :ord
+
   ##
   # Converts the fixnum to BER format.
   def to_ber

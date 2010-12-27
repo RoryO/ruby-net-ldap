@@ -1,3 +1,18 @@
+# LDAP DN support classes
+#
+
+##
+# Objects of this class represent an LDAP DN.
+#
+# In LDAP-land, a DN ("Distinguished Name") is a unique identifier for an
+# entry within an LDAP directory. It is made up of a number of other
+# attributes strung together, to identify the entry in the tree.
+#
+# Each attribute that makes up a DN needs to have its value escaped so that
+# the DN is valid. This class helps take care of that.
+#
+# A fully escaped DN needs to be unescaped when analysing its contents. This
+# class also helps take care of that.
 class Net::LDAP::DN
   ##
   # Initialize a DN, escaping as required. Pass in attributes in name/value
@@ -26,7 +41,7 @@ class Net::LDAP::DN
 
   ##
   # Parse the DN into key/value pairs.
-  def each
+  def each_pair
     state = :key
     key = StringIO.new
     value = StringIO.new
@@ -67,22 +82,30 @@ class Net::LDAP::DN
   end
 
   ##
+  # Returns the DN as an array in the form expected by the constructor.
+  def to_a
+    a = []
+    self.each_pair { |key, value| a << key << value }
+    a
+  end
+
+  ##
   # Return the DN as an escaped string.
   def to_s
     @dn
   end
 
   ##
-  # Returns the DN as an array in the form expected by the constructor.
-  def to_a
-    a = []
-    self.each { |key, value| a << key << value }
-    a
+  # Escape a string for use in an LDAP dn. Escapes required characters by
+  # prefixing with a \.
+  def self.escape(value)
+    value.gsub(/[,=+<>#;\\"]/) {|s| "\\#{s}" } 
   end
 
   ##
-  # Escape a string for use in an LDAP dn
-  def self.escape(value)
-    value.gsub(/[,=+<>#;\\"]/) {|s| "\\#{s}" } 
+  # Proxy all other requests to the string object, because a DN is mainly
+  # used within the library as a string
+  def method_missing(method, *args, &block)
+    @dn.send(method, *args, &block)
   end
 end

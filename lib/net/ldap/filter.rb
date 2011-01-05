@@ -269,12 +269,6 @@ class Net::LDAP::Filter
     end
 
     ##
-    # Escape a string for use in an LDAP filter
-    def escape(string)
-      string.gsub(/[\*\(\)\\\0]/) {|s| sprintf("\\%02x", s[0]) } 
-    end
-
-    ##
     # Converts an LDAP search filter in BER format to an Net::LDAP::Filter
     # object. The incoming BER object most likely came to us by parsing an
     # LDAP searchRequest PDU. See also the comments under #to_ber, including

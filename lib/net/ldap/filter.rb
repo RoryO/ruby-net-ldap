@@ -751,7 +751,7 @@ class Net::LDAP::Filter
     # This parses a given expression inside of parentheses.
     def parse_filter_branch(scanner)
       scanner.scan(/\s*/)
-      if token = scanner.scan(/[-\w\d_:.]*[\d\w]/)
+      if token = scanner.scan(/[-\w:.]*[\w]/)
         scanner.scan(/\s*/)
         if op = scanner.scan(/<=|>=|!=|:=|=/)
           scanner.scan(/\s*/)

@@ -1,4 +1,5 @@
 require 'common'
+require 'net/ldap/dn'
 
 class TestDN < Test::Unit::TestCase
   DN = Net::LDAP::DN

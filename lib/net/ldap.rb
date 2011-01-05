@@ -13,7 +13,6 @@ end
 require 'socket'
 
 require 'net/ber'
-require 'net/ldap/dn'
 require 'net/ldap/pdu'
 require 'net/ldap/filter'
 require 'net/ldap/dataset'

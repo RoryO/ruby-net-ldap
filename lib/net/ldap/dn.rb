@@ -56,23 +56,35 @@ class Net::LDAP::DN
         end
         when :value then case char
           when '\\' then state = :value_escape
-          when ',' then state = :key; yield key.string, value.string; key = StringIO.new; value = StringIO.new;
+          when ',' then
+            state = :key
+            yield key.string, value.string
+            key = StringIO.new
+            value = StringIO.new;
           else value << char
         end
         when :key_escape then case char
-          when "0".."9","a".."f","A".."F" then state = :key_escape_hex; hex_buffer = char
+          when "0".."9","a".."f","A".."F" then
+            state = :key_escape_hex;
+            hex_buffer = char
           else state = :key; key << char
         end
         when :key_escape_hex then case char
-          when "0".."9","a".."f","A".."F" then state = :key; key << "#{hex_buffer}#{char}".to_i(16).chr
+          when "0".."9","a".."f","A".."F" then
+            state = :key
+            key << "#{hex_buffer}#{char}".to_i(16).chr
           else raise "DN badly formed"
         end
         when :value_escape then case char
-          when "0".."9","a".."f","A".."F" then state = :value_escape_hex; hex_buffer = char
+          when "0".."9","a".."f","A".."F" then
+            state = :value_escape_hex
+            hex_buffer = char
           else state = :value; value << char
         end
         when :value_escape_hex then case char
-          when "0".."9","a".."f","A".."F" then state = :value; value << "#{hex_buffer}#{char}".to_i(16).chr
+          when "0".."9","a".."f","A".."F" then
+            state = :value
+            value << "#{hex_buffer}#{char}".to_i(16).chr
           else raise "DN badly formed"
         end
       end

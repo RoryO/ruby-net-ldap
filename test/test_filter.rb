@@ -25,10 +25,10 @@ class TestFilter < Test::Unit::TestCase
   end
 
   def test_convenience_filters
-    assert_equal("(uid=\\2a)", Filter.equals("uid", "*").to_s)
+    assert_equal("(uid=\\2A)", Filter.equals("uid", "*").to_s)
     assert_equal("(uid=\\28*)", Filter.begins("uid", "(").to_s)
     assert_equal("(uid=*\\29)", Filter.ends("uid", ")").to_s)
-    assert_equal("(uid=*\\5c*)", Filter.contains("uid", "\\").to_s)
+    assert_equal("(uid=*\\5C*)", Filter.contains("uid", "\\").to_s)
   end
 
 	def test_c2

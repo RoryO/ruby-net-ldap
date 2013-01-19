@@ -9,11 +9,11 @@ class TestFilter < Test::Unit::TestCase
   end
 
   def test_invalid_filter_string
-    assert_raises(Net::LDAP::LdapError) { Filter.from_rfc2254("") }
+    assert_raises(Net::LDAP::FilterSyntaxInvalidError) { Filter.from_rfc2254("") }
   end
 
   def test_invalid_filter
-    assert_raises(Net::LDAP::LdapError) {
+    assert_raises(Net::LDAP::OperatorError) {
       # This test exists to prove that our constructor blocks unknown filter
       # types. All filters must be constructed using helpers.
       Filter.__send__(:new, :xx, nil, nil)
@@ -54,7 +54,7 @@ class TestFilter < Test::Unit::TestCase
 
 	def test_filter_with_single_clause
 		assert_equal("(cn=name)", Net::LDAP::Filter.construct("(&(cn=name))").to_s)
-    end
+	end
 
 	def test_filters_from_ber
 		[

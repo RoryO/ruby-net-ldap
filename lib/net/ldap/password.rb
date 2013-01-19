@@ -22,7 +22,7 @@ class Net::LDAP::Password
                             when :sha
                               [Digest::SHA1.new, 'SHA']
                             else
-                              raise Net::LDAP::LdapError, "Unsupported password-hash type (#{type})"
+                              raise Net::LDAP::HashTypeUnsupportedError, "Unsupported password-hash type (#{type})"
                             end
       digest << str.to_s
       return "{#{digest_name}}#{[digest.digest].pack('m').chomp }"

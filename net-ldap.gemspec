@@ -7,6 +7,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Cianfrocca", "Emiel van de Laar", "Rory O'Connell", "Kaspar Schiess", "Austin Ziegler"]
   s.date = %q{2011-03-17}
+  s.license = "MIT"
   s.description = %q{Net::LDAP for Ruby (also called net-ldap) implements client access for the
 Lightweight Directory Access Protocol (LDAP), an IETF standard protocol for
 accessing distributed directory services. Net::LDAP is written completely in

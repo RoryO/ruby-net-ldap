@@ -1,3 +1,4 @@
+# coding: us-ascii
 # $Id: testsnmp.rb 231 2006-12-21 15:09:29Z blackhedd $
 
 require 'common'

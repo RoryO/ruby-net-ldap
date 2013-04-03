@@ -23,7 +23,7 @@
 class Net::LDAP::Filter
   ##
   # Known filter types.
-  FilterTypes = [ :ne, :eq, :ge, :le, :and, :or, :not, :ex ]
+  FilterTypes = [ :ne, :eq, :ap, :ge, :le, :and, :or, :not, :ex ]
 
   def initialize(op, left, right) #:nodoc:
     unless FilterTypes.include?(op)
@@ -63,6 +63,17 @@ class Net::LDAP::Filter
     # This filter does not perform any escaping
     def eq(attribute, value)
       new(:eq, attribute, value)
+    end
+
+    ##
+    # Creates a Filter object indicating that the value of a particular
+    # attribute must approximately match a particular string.
+    #
+    #   f = Net::LDAP::Filter.ap("cn", "marcus")
+    #
+    # This filter does not perform any escaping
+    def ap(attribute, value)
+      new(:ap, attribute, value)
     end
 
     ##
@@ -288,6 +299,8 @@ class Net::LDAP::Filter
         ge(ber.first.to_s, ber.last.to_s)
       when 0xa6 # context-specific constructed 6, "lessOrEqual"
         le(ber.first.to_s, ber.last.to_s)
+      when 0xa8 # context-specific constructed 8, "approxMatch"
+        ap(ber.first.to_s, ber.last.to_s)
       when 0x87 # context-specific primitive 7, "present"
         # call to_s to get rid of the BER-identifiedness of the incoming string.
         present?(ber.to_s)
@@ -399,6 +412,8 @@ class Net::LDAP::Filter
       "!(#{@left}=#{@right})"
     when :eq
       "#{@left}=#{@right}"
+    when :ap
+      "#{@left}~=#{@right}"
     when :ex
       "#{@left}:=#{@right}"
     when :ge
@@ -522,6 +537,8 @@ class Net::LDAP::Filter
       seq << "1".to_ber_contextspecific(4) unless dn.to_s.empty? # dnAttributes
 
       seq.to_ber_contextspecific(9)
+    when :ap
+      [@left.to_s.to_ber, unescape(@right).to_ber].to_ber_contextspecific(8)
     when :ge
       [@left.to_s.to_ber, unescape(@right).to_ber].to_ber_contextspecific(5)
     when :le
@@ -579,6 +596,8 @@ class Net::LDAP::Filter
       else
         yield :equalityMatch, @left, @right
       end
+    when :ap
+      yield :approxMatch, @left, @right
     when :ge
       yield :greaterOrEqual, @left, @right
     when :le
@@ -731,7 +750,7 @@ class Net::LDAP::Filter
       scanner.scan(/\s*/)
       if token = scanner.scan(/[-\w:.]*[\w]/)
         scanner.scan(/\s*/)
-        if op = scanner.scan(/<=|>=|!=|:=|=/)
+        if op = scanner.scan(/<=|>=|!=|:=|=|~=/)
           scanner.scan(/\s*/)
           if value = scanner.scan(/(?:[-\w*.+@=,#\$%&!'\s]|\\[a-fA-F\d]{2})+/)
             # 20100313 AZ: Assumes that "(uid=george*)" is the same as
@@ -743,6 +762,8 @@ class Net::LDAP::Filter
               Net::LDAP::Filter.eq(token, value)
             when "!="
               Net::LDAP::Filter.ne(token, value)
+            when "~="
+              Net::LDAP::Filter.ap(token, value)
             when "<="
               Net::LDAP::Filter.le(token, value)
             when ">="

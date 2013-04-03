@@ -294,6 +294,7 @@ class Net::LDAP
     5 => :array, # SearchFilter-GE
     6 => :array, # SearchFilter-LE
     7 => :array, # serverSaslCreds
+    8 => :array, # SearchFilter-approxMatch
     9 => :array, # SearchFilter-extensible
   }
   context_specific = {

@@ -54,7 +54,7 @@ class TestFilter < Test::Unit::TestCase
 
 	def test_filter_with_single_clause
 		assert_equal("(cn=name)", Net::LDAP::Filter.construct("(&(cn=name))").to_s)
-    end
+	end
 
 	def test_filters_from_ber
 		[
@@ -63,6 +63,7 @@ class TestFilter < Test::Unit::TestCase
 			Net::LDAP::Filter.eq("objectclass", "ou"),
 			Net::LDAP::Filter.ge("uid", "500"),
 			Net::LDAP::Filter.le("uid", "500"),
+			Net::LDAP::Filter.ap("cn", "foo"),
 			(~ Net::LDAP::Filter.pres("objectclass")),
 			(Net::LDAP::Filter.pres("objectclass") & Net::LDAP::Filter.pres("ou")),
 			(Net::LDAP::Filter.pres("objectclass") & Net::LDAP::Filter.pres("ou") & Net::LDAP::Filter.pres("sn")),
@@ -93,6 +94,7 @@ class TestFilter < Test::Unit::TestCase
 			Net::LDAP::Filter.construct("objectclass=ou"),
 			Net::LDAP::Filter.construct("uid >= 500"),
 			Net::LDAP::Filter.construct("uid <= 500"),
+			Net::LDAP::Filter.construct("cn ~= foo"),
 			Net::LDAP::Filter.construct("(!(uid=*))"),
 			Net::LDAP::Filter.construct("(&(uid=*)(objectclass=*))"),
 			Net::LDAP::Filter.construct("(&(uid=*)(objectclass=*)(sn=*))"),
